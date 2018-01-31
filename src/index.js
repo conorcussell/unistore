@@ -11,25 +11,33 @@ import { assign } from './util';
  *    store.setState({ c: 'd' });   // logs { a: 'b', c: 'd' }
  */
 export default function createStore(state) {
+	// create an array of listeners
 	let listeners = [];
+	// if we've been given a state argument, use that, else use an empty object
 	state = state || {};
 
+	// function to unsubscribe from a listener
 	function unsubscribe(listener) {
-		let out = [];
-		for (let i=0; i<listeners.length; i++) {
-			if (listeners[i]===listener) {
-				listener = null;
+		let out = []; // an array of listeners to return
+		for (let i=0; i<listeners.length; i++) { // loop through the listeners and check if they are the one we want to unsubscribe from
+			if (listeners[i]===listener) { // is the current index of listeners array the listener we want to remove?
+				listener = null; // if so, set it to null
 			}
-			else {
+			else { // else, push the listener to the out array
 				out.push(listeners[i]);
 			}
 		}
-		listeners = out;
+		listeners = out; // make listeners equal to the out array, which is listeners with the unsubscribed listener removed.
 	}
 
+	// function to setState
 	function setState(update, overwrite, action) {
+		// update is what to add to the state, overwrite is a boolean, if its true we just overwrite the state with that.
+		// state = is overwrite true?, then just equal to whatever we updated to, else use assign to create a new object with the update applied
 		state = overwrite ? update : assign(assign({}, state), update);
-		let currentListeners = listeners;
+		let currentListeners = listeners; // current listeners are our event listeners
+
+		// we loop through them, and call the function with our state object and the action, what is an action here?
 		for (let i=0; i<currentListeners.length; i++) currentListeners[i](state, action);
 	}
 
@@ -37,6 +45,7 @@ export default function createStore(state) {
 	 *  @name store
 	 */
 
+	// return an object so we can call store.setState etc
 	return /** @lends store */ {
 
 		/** Create a bound copy of the given action function.

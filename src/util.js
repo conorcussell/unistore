@@ -24,6 +24,7 @@ export function select(properties) {
 
 // Lighter Object.assign stand-in
 export function assign(obj, props) {
+	// take each prop from the props argument and add it to the object you are assigning to
 	for (let i in props) obj[i] = props[i];
 	return obj;
 }
